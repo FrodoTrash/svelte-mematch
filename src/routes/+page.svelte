@@ -74,7 +74,7 @@
 
 	$: selected.length == 2 && matchCards();
 	$: maxMatches == matches.length && gameWon();
-	$: time == 0 && gameLost();
+	$: time === 0 && gameLost();
 
 	$: console.log(state, selected, matches);
 </script>
@@ -113,15 +113,16 @@
 					{@const isSelected = selected.includes(cardIndex)}
 					{@const isSelectedOrMatch = selected.includes(cardIndex) || matches.includes(card)}
 					{@const match = matches.includes(card)}
-
+					<!-- 		class:variant-glass-primary={match} -->
 					<button
 						class="card p-12 card-hover text-7xl"
-						class:variant-glass-error={isSelected}
-						class:variant-glass-primary={match}
+						class:selected={isSelected}
+						class:flip={isSelectedOrMatch}
 						disabled={isSelectedOrMatch}
+						class:variant-glass-primary={match}
 						on:click={() => selectCard(cardIndex)}
 					>
-						<div class:match>{card}</div>
+						<div class="back" class:match>{card}</div>
 					</button>
 				{/each}
 			</section>
@@ -143,15 +144,35 @@
 	</div>
 </div>
 
-<style>
-	.variant-glass-error {
-		transition: opacity 0.5s ease-in-out;
-		opacity: 0.7;
+<style lang="postcss">
+	.card {
+		height: 184px;
+		width: 184px;
+		font-size: 4rem;
+		transition: rotate 0.3s ease-out;
+		transform-style: preserve-3d;
 	}
-	.match {
-		transition: opacity 1.5s ease-out;
-		opacity: 0.3;
+
+	.card.selected {
+		border: 4px solid rebeccapurple;
 	}
+	.card .back {
+		inset: 0;
+		place-content: center;
+		/* TODO uncomment the line below when attempting to fix card flipping */
+		/* backface-visibility: hidden; */
+		rotate: y 180deg;
+	}
+	.card.flip {
+		rotate: y 180deg;
+		pointer-events: none;
+	}
+
+	.card .match {
+		transition: opacity 0.3s ease-out;
+		opacity: 0.4;
+	}
+
 	.variant-glass-primary {
 		transition: opacity 1.5 ease-in;
 		opacity: 0.8;
